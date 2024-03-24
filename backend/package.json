@@ -1,0 +1,27 @@
+{
+  "name": "dgn_for_art_exhibitions",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "devStart": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/android172/DGNforArtExhibitions.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/android172/DGNforArtExhibitions/issues"
+  },
+  "homepage": "https://github.com/android172/DGNforArtExhibitions#readme",
+  "dependencies": {
+    "express": "^4.18.3",
+    "express-graphql": "^0.12.0",
+    "graphql": "^15.8.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
