@@ -1,5 +1,11 @@
 {
     "cSpell.words": [
-        "graphiql"
+        "birthdate",
+        "deathdate",
+        "deathplace",
+        "firstname",
+        "graphiql",
+        "lastname",
+        "topojson"
     ]
 }

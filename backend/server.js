@@ -9,6 +9,9 @@ const {
     GraphQLNonNull
 } = require('graphql')
 
+// We also need cors
+const cors = require('cors')
+
 const { authors, books } = require('./database.js')
 
 const app = express()
@@ -99,6 +102,12 @@ const schema = new GraphQLSchema({
     mutation: RootMutationType
 })
 
+// Use cors
+app.use(cors({
+    origin: 'http://localhost:4200'
+}));
+
+// Use graph QL
 app.use('/graphql', expressGraphQL({
     schema: schema,
     graphiql: true
