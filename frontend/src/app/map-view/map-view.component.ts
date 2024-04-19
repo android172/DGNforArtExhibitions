@@ -1,205 +1,162 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelect, MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+
 import * as d3 from 'd3';
-import * as topojson from 'topojson-client';
 
 import { Apollo } from 'apollo-angular';
 import { ApolloQueryResult } from '@apollo/client';
-import { GET_HOSTS } from '../graphql.operations';
+
 import { Host } from '../../objects/host';
 import { Place } from '../../objects/place';
+import { Exhibition } from '../../objects/exhibition';
+import { Artist } from '../../objects/artist';
+import { MainMap } from './main_map';
+import { ArtistList } from './artist_list';
+
+import {
+  GET_ARTISTS,
+  GET_ARTIST_EXHIBITION_INFO,
+  GET_HOSTS,
+} from '../graphql.operations';
+import ErrorDisplay from '../error_display';
 
 @Component({
   selector: 'app-map-view',
   standalone: true,
-  imports: [],
+  imports: [
+    CommonModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatIconModule,
+    MatButtonModule,
+    NgxMatSelectSearchModule,
+    ReactiveFormsModule,
+  ],
   templateUrl: './map-view.component.html',
-  styleUrl: './map-view.component.css'
+  styleUrl: './map-view.component.css',
 })
-export class MapViewComponent {
+export class MapViewComponent implements AfterViewInit {
+  // Main map
   @ViewChild('main_map', { read: ElementRef })
-  main_map!: ElementRef;
+  main_map_element!: ElementRef;
+  main_map!: MainMap;
 
-  map_svg: any;
+  // Artist list
+  @ViewChild('select_artists', { read: MatSelect })
+  select_artists!: MatSelect;
+  artist_list: ArtistList = new ArtistList();
 
   // --------------------------------------------------------------------------
 
-  constructor(private apollo: Apollo) {
-    d3.json("../assets/europe.topojson").then((map_data: any) => {
-      this.draw_map(map_data);
-    });
+  constructor(private apollo: Apollo) {}
+
+  ngAfterViewInit(): void {
+    // Load map
+    this.main_map = new MainMap(this.main_map_element.nativeElement);
+    d3.json('../assets/europe.topojson').then((map_data: any) =>
+      this.main_map.draw_base_map(map_data),
+    );
+
+    // Load artists
+    this.artist_list.init(this.select_artists);
+    this.load_available_artists();
   }
 
   // --------------------------------------------------------------------------
 
-  // Various settings
-  private fill_color: string = "#fec";
-  private selected_color: string = "red";
-  private zoom_threshold: [number, number] = [1.0, 4.0];
-  private current_scale: number = 1.0;
-
-  private scale_rule_circles: any =
-    (d: any) => Math.log(d.hosts.length + 1) * 3 / this.current_scale
-  private scale_rule_path: any =
-    (d: any) => 0.5 / this.current_scale
-
-  private get_zoom: any =
-    (width: number, height: number): any =>
-      d3.zoom()
-        .scaleExtent(this.zoom_threshold)
-        .translateExtent([[0, 0], [width, height]])
-        .on("zoom", (e: any) => {
-          // Update scale
-          this.current_scale = e.transform.k;
-
-          // Update transforms
-          const g = this.map_svg.select('g');
-          g.attr('transform', e.transform)
-
-          // Update path width
-          g.selectAll("path").attr("stroke-width", this.scale_rule_path);
-
-          // Update circles
-          g.selectAll("circle").attr("r", this.scale_rule_circles)
-        });
-
-  private get_projection: any =
-    (width: number): any =>
-      d3.geoEqualEarth()
-        .translate([0.35 * width, 1.6 * width])
-        .scale(1.3 * width);
-
-  resize_map(): void {
-    if (!this.map_svg) return;
-    const svg = this.map_svg;
-
-    // Get dimensions
-    const rect = svg.node().getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-
-    // defines the map projection method and scales the map within the SVG
-    const projection = this.get_projection(width);
-
-    // generates the path coordinates from topojson
-    const path: any = d3.geoPath().projection(projection);
-
-    // Zoom
-    const zoom = this.get_zoom(width, height, svg);
-
-    // Update
-    svg.call(zoom).selectAll("path").attr('d', path);
+  map_resize() {
+    this.main_map.on_resize();
   }
 
-  draw_map(map_data: any): void {
-    if (this.map_svg) this.map_svg.remove();
+  // --------------------------------------------------------------------------
 
-    // Set style
-    this.map_svg = d3.select(this.main_map.nativeElement);
-    const svg = this.map_svg;
-    svg.attr("style", "width: 50%; height: 100%; margin: 2%; border: 1px solid black; aspect-ratio: 4 / 3;");
-
-    // Get dimensions
-    const rect = svg.node().getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-
-    // defines the map projection method and scales the map within the SVG
-    const projection = this.get_projection(width);
-
-    // generates the path coordinates from topojson
-    const path: any = d3.geoPath().projection(projection);
-
-    // map geometry
-    const map_fe: GeoJSON.FeatureCollection | GeoJSON.Feature =
-      topojson.feature(map_data, map_data.objects.europe);
-    const map_geo = map_fe.type === "Feature" ? [map_fe] : (map_fe as any).features;
-
-    // Zoom
-    const zoom = this.get_zoom(width, height, svg);
-
-    // Add graphics
-    const graph = svg.call(zoom).append("g");
-
-    // generates and styles the SVG path
-    graph.append('g')
-      .selectAll('path')
-      .data(map_geo)
-      .enter().append('path')
-      .attr('d', path)
-      .attr('stroke', 'black')
-      .attr('stroke-width', this.scale_rule_path)
-      .attr('fill', this.fill_color)
-      .attr('data-id', (d: any) => d.id)
-      .on('mouseover', (_: any, item: any) => {
-        svg.select(`[data-id="${item.id}"]`)
-          .transition().duration(200)
-          .attr("fill", this.selected_color);
+  load_available_artists(): void {
+    this.apollo
+      .query({
+        query: GET_ARTISTS,
       })
-      .on('mouseout', (_: any, item: any) => {
-        svg.select(`[data-id="${item.id}"]`)
-          .transition().duration(200)
-          .attr("fill", this.fill_color);
+      .subscribe(({ data, error }: ApolloQueryResult<unknown>) => {
+        if (error !== undefined) {
+          ErrorDisplay.show_message(error.message);
+          return;
+        }
+
+        // Load available artists list with artists name
+        this.artist_list.load_artists(Artist.from_query(data));
+        this.artist_list.available_artists.sort();
       });
-    // .on('click', (event, item) => {
-    //   // country_color_selected(i.properties.id)
-    // })
   }
 
-  draw_places(places: Place[]): void {
-    const svg = this.map_svg;
-
-    // Get dimensions
-    const rect = svg.node().getBoundingClientRect();
-    const width = rect.width;
-
-    // Get projection
-    const projection = this.get_projection(width);
-
-    // Color will depend on host count
-    const color: any =
-      d3.scaleLog<string, number>()
-        .domain([1, 60])
-        .range(["black", "blue"]);
-
-    // Add circles
-    const graph = svg.select('g');
-    graph.append('g')
-      .selectAll("circle")
-      .data(places)
-      .enter()
-      .append("circle")
-      .attr("cx", (d: Place) => d.project(projection)[0])
-      .attr("cy", (d: Place) => d.project(projection)[1])
-      .attr("r", this.scale_rule_circles)
-      .attr("fill", (d: Place) => color(d.hosts.length))
-      .attr("data-id", (d: Place) => d.id!)
-      .on("mouseover", (_: any, d: Place) => {
-        svg.select(`[data-id="${d.id}"]`)
-          .transition().duration(200)
-          .attr("fill", this.selected_color);
-      })
-      .on('mouseout', (_: any, d: Place) => {
-        svg.select(`[data-id="${d.id}"]`)
-          .transition().duration(200)
-          .attr("fill", color(d.hosts.length));
-      })
-      ;
-  }
+  // --------------------------------------------------------------------------
 
   load_hosts(): void {
-    this.apollo.query({
-      query: GET_HOSTS
-    }).subscribe(({ data, error }: ApolloQueryResult<unknown>) => {
-      if (error === undefined) {
+    this.apollo
+      .query({
+        query: GET_HOSTS,
+      })
+      .subscribe(({ data, error }: ApolloQueryResult<unknown>) => {
+        if (error !== undefined) {
+          ErrorDisplay.show_message(error.message);
+          return;
+        }
+
         // Create hosts
         let hosts = Host.from_query(data);
         // Create places
         let places = Place.from_hosts(hosts);
         // Put them on the map
-        this.draw_places(places);
-      } else {
-        // this.main_text = error.message;
-      }
-    })
+        this.main_map.draw_places(places);
+      });
   }
+
+  load_exhibitions(): void {
+    this.apollo
+      .query({
+        query: GET_ARTIST_EXHIBITION_INFO,
+        variables: {
+          id_list: ['12', '1', '2'],
+        },
+      })
+      .subscribe(({ data, error }: ApolloQueryResult<unknown>) => {
+        if (error !== undefined) {
+          ErrorDisplay.show_message(error.message);
+          return;
+        }
+
+        // Create artists
+        let artist = Artist.from_query(data);
+        // Load their unique exhibitions
+        let exhibitions: Exhibition[] = [];
+        artist.forEach((a: Artist) =>
+          a.exhibited_exhibitions.forEach((e: Exhibition) => {
+            if (!exhibitions.some((ex: Exhibition) => ex.id === e.id))
+              exhibitions.push(e);
+          }),
+        );
+        // Compute unique hosts
+        let hosts: Host[] = [];
+        exhibitions.forEach((e: Exhibition) =>
+          e.took_place_in_hosts.forEach((h: Host) => {
+            if (!hosts.some((host: Host) => host.id === h.id)) hosts.push(h);
+          }),
+        );
+        // Create places
+        let places = Place.from_hosts(hosts);
+        // Put them on the map
+        // this.main_map.draw_places(places);
+        console.log(places);
+
+        // Draw trajectories
+        this.main_map.draw_artists_life_trajectory(artist[1]);
+      });
+  }
+
+  // --------------------------------------------------------------------------
 }

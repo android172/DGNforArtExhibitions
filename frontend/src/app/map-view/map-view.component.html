@@ -1,2 +1,44 @@
-<svg #main_map (window:resize)="resize_map()"></svg>
-<button (click)="load_hosts()">Load hosts</button>
+<div class="main-map-container">
+  <svg class="main-map" #main_map (window:resize)="map_resize()"></svg>
+  <div class="main-map-options">
+    <!-- Artist list dropdown -->
+    <mat-form-field appearance="fill">
+      <mat-label>Select artists</mat-label>
+      <mat-select
+        #select_artists
+        (selectionChange)="artist_list.select_artist($event.value)"
+      >
+        <ngx-mat-select-search
+          [formControl]="artist_list.artists_search_control"
+        ></ngx-mat-select-search>
+        <mat-option
+          *ngFor="let artist of artist_list.filtered_artists | async"
+          [value]="artist"
+        >
+          {{ artist }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- List of selected artists -->
+    <div class="selected-artists-container">
+      <div
+        *ngFor="let artist of artist_list.selected_artists"
+        class="selected-artists"
+      >
+        {{ artist }}
+        <button
+          mat-icon-button
+          color="warn"
+          (click)="artist_list.remove_artist(artist)"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Some buttons -->
+    <button (click)="load_hosts()">Load hosts</button>
+    <button (click)="load_exhibitions()">Load exhibitions</button>
+  </div>
+</div>

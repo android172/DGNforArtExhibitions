@@ -1,40 +1,48 @@
 import { Parse } from "./common";
+import { Exhibition } from "./exhibition";
 
 export class Artist {
-    id: number | undefined;
-    first_name: string | undefined;
-    last_name: string | undefined;
-    title: string | undefined;
-    sex: string | undefined;
-    country: string | undefined;
-    birth_date: Date | undefined;
-    birth_place: string | undefined;
-    death_date: Date | undefined;
-    death_place: string | undefined;
-
-    constructor() { }
+    constructor(
+        public id: number | undefined,
+        public first_name: string | undefined,
+        public last_name: string | undefined,
+        public title: string | undefined,
+        public sex: string | undefined,
+        public country: string | undefined,
+        public birth_date: Date | undefined,
+        public birth_place: string | undefined,
+        public death_date: Date | undefined,
+        public death_place: string | undefined,
+        public exhibited_exhibitions: Exhibition[]
+    ) { }
 
     public static from_query(query: unknown): Artist[] {
-        const data = query as { artists: RawArtistData[] };
+        if (query === undefined) return [];
+        const data = query as { artists: ArtistRaw[] };
+        if (data.artists === undefined) return [];
         const artists = data.artists;
-        return artists.map((data: RawArtistData) => {
-            return {
-                id: Parse.int(data.id),
-                first_name: Parse.string(data.firstname),
-                last_name: Parse.string(data.lastname),
-                title: Parse.string(data.title),
-                sex: Parse.string(data.sex),
-                country: Parse.string(data.country),
-                birth_date: Parse.date(data.birthdate),
-                birth_place: Parse.string(data.birthplace),
-                death_date: Parse.date(data.deathdate),
-                death_place: Parse.string(data.deathplace)
-            }
-        });
+        return artists
+            .map((data: ArtistRaw) =>
+                new Artist(
+                    Parse.int(data.id),
+                    Parse.string(data.firstname),
+                    Parse.string(data.lastname),
+                    Parse.string(data.title),
+                    Parse.string(data.sex),
+                    Parse.string(data.country),
+                    Parse.date(data.birthdate),
+                    Parse.string(data.birthplace),
+                    Parse.date(data.deathdate),
+                    Parse.string(data.deathplace),
+                    Parse.query(
+                        { exhibitions: data.exhibitedExhibitions }, Exhibition
+                    )
+                )
+            );
     }
 }
 
-interface RawArtistData {
+interface ArtistRaw {
     id: string
     firstname: string
     lastname: string
@@ -45,4 +53,5 @@ interface RawArtistData {
     birthplace: string
     deathdate: string
     deathplace: string
+    exhibitedExhibitions: any
 }

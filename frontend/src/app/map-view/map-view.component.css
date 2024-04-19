@@ -1,0 +1,56 @@
+/* -------------------------------------------------------------------------- */
+
+.main-map-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.main-map {
+  width: calc(60% - 2% - 2px);
+  height: 100%;
+  margin: 1%;
+  border: 1px solid black;
+  aspect-ratio: 5 / 3;
+}
+
+.main-map-options {
+  width: calc(40% - 2%);
+  padding: 1%;
+}
+
+/* Media query for small devices */
+@media (max-width: 768px) {
+  /* Stack divs vertically for small screens */
+  .main-map,
+  .main-map-options {
+    width: 100%; /* Full width for small screens */
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+
+.select-artists-container {
+  margin-bottom: 10px;
+}
+
+.select-artists {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.selected-artists {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  padding-left: 20px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.selected-artists > button {
+  margin-left: auto;
+}
+
+/* -------------------------------------------------------------------------- */

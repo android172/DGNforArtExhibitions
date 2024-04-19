@@ -37,9 +37,12 @@ export class Host {
     }
 
     public static from_query(query: unknown): Host[] {
+        if (query === undefined) return [];
         const data = query as { hosts: HostRaw[] };
+        if (data.hosts === undefined) return [];
         const hosts = data.hosts;
-        return hosts.map((data: HostRaw) => new Host(data));
+        return hosts
+            .map((data: HostRaw) => new Host(data));
     }
 }
 

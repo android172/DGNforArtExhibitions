@@ -3,9 +3,15 @@
         "birthdate",
         "deathdate",
         "deathplace",
+        "enddate",
         "firstname",
         "graphiql",
         "lastname",
+        "startdate",
         "topojson"
-    ]
+    ],
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
 }
