@@ -6,7 +6,7 @@ import { map, startWith } from 'rxjs/operators';
 
 export class ArtistList {
   // List of available / selected artists
-  public available_artists: string[] = ['1', '2,', '3,,'];
+  public available_artists: string[] = ['...'];
   public selected_artists: string[] = [];
 
   // Filter
@@ -15,6 +15,9 @@ export class ArtistList {
 
   // Select artist dropdown
   private select_artists!: MatSelect;
+
+  // Flags
+  private artists_loaded: boolean = false;
 
   // --------------------------------------------------------------------------
 
@@ -36,9 +39,11 @@ export class ArtistList {
       (a) => a.first_name + ' ' + a.last_name,
     );
     this.available_artists.sort();
+    this.artists_loaded = true;
   }
 
   select_artist(artist: string): void {
+    if (!this.artists_loaded) return;
     if (this.selected_artists.includes(artist)) return;
     this.selected_artists.push(artist);
     this.available_artists = this.available_artists.filter((a) => a != artist);

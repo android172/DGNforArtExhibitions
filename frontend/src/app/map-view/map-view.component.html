@@ -1,5 +1,5 @@
-<div class="main-map-container">
-  <svg class="main-map" #main_map (window:resize)="map_resize()"></svg>
+<div class="main-map-container" (window:resize)="on_resize()">
+  <svg class="main-map" #main_map></svg>
   <div class="main-map-options">
     <!-- Artist list dropdown -->
     <mat-form-field appearance="fill">

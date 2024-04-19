@@ -58,21 +58,24 @@ export class MapViewComponent implements AfterViewInit {
   constructor(private apollo: Apollo) {}
 
   ngAfterViewInit(): void {
-    // Load map
-    this.main_map = new MainMap(this.main_map_element.nativeElement);
-    d3.json('../assets/europe.topojson').then((map_data: any) =>
-      this.main_map.draw_base_map(map_data),
-    );
-
-    // Load artists
+    // Call inits
     this.artist_list.init(this.select_artists);
+
+    // Call loads
+    this.load_map();
     this.load_available_artists();
+  }
+  on_resize() {
+    this.main_map.on_resize();
   }
 
   // --------------------------------------------------------------------------
 
-  map_resize() {
-    this.main_map.on_resize();
+  load_map(): void {
+    this.main_map = new MainMap(this.main_map_element.nativeElement);
+    d3.json('../assets/europe.topojson').then((map_data: any) =>
+      this.main_map.draw_base_map(map_data),
+    );
   }
 
   // --------------------------------------------------------------------------
