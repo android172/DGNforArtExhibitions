@@ -124,7 +124,7 @@ export class MapViewComponent implements AfterViewInit {
       .query({
         query: GET_ARTIST_EXHIBITION_INFO,
         variables: {
-          id_list: ['12', '1', '2'],
+          id_list: ['23', '52', '12'],
         },
       })
       .subscribe(({ data, error }: ApolloQueryResult<unknown>) => {
@@ -135,29 +135,9 @@ export class MapViewComponent implements AfterViewInit {
 
         // Create artists
         let artist = Artist.from_query(data);
-        // Load their unique exhibitions
-        let exhibitions: Exhibition[] = [];
-        artist.forEach((a: Artist) =>
-          a.exhibited_exhibitions.forEach((e: Exhibition) => {
-            if (!exhibitions.some((ex: Exhibition) => ex.id === e.id))
-              exhibitions.push(e);
-          }),
-        );
-        // Compute unique hosts
-        let hosts: Host[] = [];
-        exhibitions.forEach((e: Exhibition) =>
-          e.took_place_in_hosts.forEach((h: Host) => {
-            if (!hosts.some((host: Host) => host.id === h.id)) hosts.push(h);
-          }),
-        );
-        // Create places
-        let places = Place.from_hosts(hosts);
-        // Put them on the map
-        // this.main_map.draw_places(places);
-        console.log(places);
 
         // Draw trajectories
-        this.main_map.draw_artists_life_trajectory(artist[1]);
+        this.main_map.draw_artists_life_trajectory(artist[0]);
       });
   }
 

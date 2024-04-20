@@ -4,6 +4,7 @@ import { Place } from '../../objects/place';
 import { Artist } from '../../objects/artist';
 import { Exhibition } from '../../objects/exhibition';
 import { Host } from '../../objects/host';
+import { DPConn, NDPConn, PlaceConnection } from './place_connection';
 
 type D3Selection = d3.Selection<any, unknown, null, undefined>;
 export class MainMap {
@@ -17,6 +18,7 @@ export class MainMap {
   private fill_color: string = '#fec';
   private selected_color: string = 'red';
   private zoom_threshold: [number, number] = [1.0, 4.0];
+  private default_conn_width: number = 3;
 
   // Scale
   private scale_rule_circles: any = (d: any) =>
@@ -35,6 +37,13 @@ export class MainMap {
       .attr('stroke-width', this.scale_rule_path);
     // Update circles
     this.graphs.places.selectAll('circle').attr('r', this.scale_rule_circles);
+    // Update lines
+    this.graphs.dir_conn
+      .selectAll('line')
+      .attr('stroke-width', this.default_conn_width / this.current_scale);
+    this.graphs.n_dir_conn
+      .selectAll('line')
+      .attr('stroke-width', this.default_conn_width / this.current_scale);
   }
 
   // Zoom
@@ -80,6 +89,8 @@ export class MainMap {
       canvas: canvas,
       base_map: canvas.append('g').attr('id', 'main_map'),
       places: canvas.append('g').attr('id', 'places'),
+      dir_conn: canvas.append('g').attr('id', 'dri_connections'),
+      n_dir_conn: canvas.append('g').attr('id', 'n_dir_connections'),
     };
   }
 
@@ -184,19 +195,13 @@ export class MainMap {
   draw_artists_life_trajectory(artist: Artist): void {
     // Get his exhibitions
     const exhibitions = artist.exhibited_exhibitions;
-    // Sort exhibitions by year
-    exhibitions.sort((a: Exhibition, b: Exhibition) => {
-      if (!a.start_year || !b.start_year) return 0;
-      if (a.start_year > b.start_year) return 1;
-      if (a.start_year < b.start_year) return -1;
-      return 0;
-    });
 
-    // Get paths from exhibition to exhibition
-    const ex_connections: [] = [];
-    for (let i = 0; i < exhibitions.length; i++) {
-      const exhibition = exhibitions[i];
-    }
+    // Get place connections
+    const [place_conn, se_place_conn] =
+      PlaceConnection.get_connections(exhibitions);
+
+    console.log(place_conn);
+    console.log(se_place_conn);
 
     // Get unique hosts
     const hosts: Host[] = [];
@@ -208,10 +213,40 @@ export class MainMap {
     // Get places visited
     const places = Place.from_hosts(hosts);
 
-    // Graph places
-    const g = this.graphs.base_map.append('g').attr('id', 'artist_trj');
+    // Compute color scale for years (1902-1916)
+    const color_scale = d3
+      .scaleSequential()
+      .domain([1902, 1916])
+      .interpolator(d3.interpolateCubehelixDefault);
 
-    g.append('g')
+    // Graph directional connections for these places
+    this.graphs.dir_conn
+      .selectAll('line')
+      .data(place_conn)
+      .enter()
+      .append('line')
+      .attr('x1', (d: DPConn) => d.f.project(this.projection)[0])
+      .attr('y1', (d: DPConn) => d.f.project(this.projection)[1])
+      .attr('x2', (d: DPConn) => d.t.project(this.projection)[0])
+      .attr('y2', (d: DPConn) => d.t.project(this.projection)[1])
+      .attr('stroke', (d: DPConn) => color_scale(d.lfy))
+      .attr('stroke-width', this.default_conn_width / this.current_scale);
+
+    // Graph non-directional connections for these places
+    this.graphs.n_dir_conn
+      .selectAll('line')
+      .data(se_place_conn)
+      .enter()
+      .append('line')
+      .attr('x1', (d: NDPConn) => d.p1.project(this.projection)[0])
+      .attr('y1', (d: NDPConn) => d.p1.project(this.projection)[1])
+      .attr('x2', (d: NDPConn) => d.p2.project(this.projection)[0])
+      .attr('y2', (d: NDPConn) => d.p2.project(this.projection)[1])
+      .attr('stroke', 'black')
+      .attr('stroke-width', this.default_conn_width / this.current_scale);
+
+    // Graph places
+    this.graphs.places
       .selectAll('circle')
       .data(places)
       .enter()
@@ -219,20 +254,6 @@ export class MainMap {
       .attr('cx', (d: Place) => d.project(this.projection)[0])
       .attr('cy', (d: Place) => d.project(this.projection)[1])
       .attr('r', this.scale_rule_circles);
-
-    // Graph connections for these places
-    g.append('g')
-      .selectAll('path')
-      .data(ex_connections)
-      .enter()
-      .append('path')
-      .attr(
-        'd',
-        d3
-          .line()
-          .x((d: any) => d.project(this.projection)[0])
-          .y((d: any) => d.project(this.projection)[1]),
-      );
   }
 }
 
@@ -240,4 +261,6 @@ interface GraphParts {
   canvas: D3Selection;
   base_map: D3Selection;
   places: D3Selection;
+  dir_conn: D3Selection;
+  n_dir_conn: D3Selection;
 }
