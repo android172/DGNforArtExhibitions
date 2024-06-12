@@ -115,7 +115,7 @@ export class MapViewComponent implements AfterViewInit {
         // Create places
         let places = Place.from_hosts(hosts);
         // Put them on the map
-        this.main_map.draw_places(places);
+        // this.main_map.draw_places(places);
       });
   }
 
@@ -124,7 +124,7 @@ export class MapViewComponent implements AfterViewInit {
       .query({
         query: GET_ARTIST_EXHIBITION_INFO,
         variables: {
-          id_list: ['23', '52', '12'],
+          id_list: ['1', '2', '83', '52', '12'],
         },
       })
       .subscribe(({ data, error }: ApolloQueryResult<unknown>) => {
@@ -137,7 +137,7 @@ export class MapViewComponent implements AfterViewInit {
         let artist = Artist.from_query(data);
 
         // Draw trajectories
-        this.main_map.draw_artists_life_trajectory(artist[0]);
+        this.main_map.draw_artists_life_trajectory(artist);
       });
   }
 
