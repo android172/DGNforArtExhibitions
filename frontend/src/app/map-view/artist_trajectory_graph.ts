@@ -71,6 +71,8 @@ export class ArtistTrajectoryGraph {
 
     // For each trajectory
     trajectories.forEach((trajectory: ArtistTrajectory) => {
+      const artist_id = trajectory.artist_id;
+
       // Collect representatives
       const [representatives, cp_list] = this.collect_representatives(
         trajectory.cp_list,
@@ -95,12 +97,14 @@ export class ArtistTrajectoryGraph {
             this._connections_self.push({
               p1: cp_main,
               p2: cp_side,
-              weight: 1,
+              artists: [artist_id],
             });
           }
 
-          // Increase weight TODO: better weight
-          // this._connections_self[conn_i].weight++;
+          // Add artist to the list otherwise
+          if (!this._connections_self[conn_i].artists.includes(artist_id)) {
+            this._connections_self[conn_i].artists.push(artist_id);
+          }
         });
       });
 
@@ -119,12 +123,14 @@ export class ArtistTrajectoryGraph {
           this._connections.push({
             p1: sp_1,
             p2: sp_2,
-            weight: 0,
+            artists: [artist_id],
           });
         }
 
-        // Increase weight
-        this._connections[conn_i].weight++;
+        // Add artist to the list otherwise
+        if (!this._connections[conn_i].artists.includes(artist_id)) {
+          this._connections[conn_i].artists.push(artist_id);
+        }
       }
     });
   }
@@ -506,7 +512,7 @@ interface ConnectionPoint {
 interface Connection {
   p1: number;
   p2: number;
-  weight: number;
+  artists: number[];
 }
 
 export {

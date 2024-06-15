@@ -14,8 +14,8 @@ export class MainMap {
 
     // Get dimensions
     const rect = this._map_svg.node().getBoundingClientRect();
-    this._width = rect.width;
-    this._height = rect.height;
+    this.width = rect.width;
+    this.height = rect.height;
 
     // Create graph with parts
     const canvas = this._map_svg
@@ -38,8 +38,8 @@ export class MainMap {
   on_resize() {
     // Get dimensions
     const rect = this._map_svg.node().getBoundingClientRect();
-    this._width = rect.width;
-    this._height = rect.height;
+    this.width = rect.width;
+    this.height = rect.height;
 
     // Update zoom
     this._map_svg.call(this.zoom);
@@ -80,7 +80,7 @@ export class MainMap {
       .scaleExtent(this._zoom_threshold)
       .translateExtent([
         [0, 0],
-        [this._width, this._height],
+        [this.width, this.height],
       ])
       .on('zoom', (e: any) => {
         // Update transforms / scale
@@ -93,8 +93,24 @@ export class MainMap {
   public get projection() {
     return d3
       .geoEqualEarth()
-      .translate([0.15 * this._width, 1.84 * this._width])
-      .scale(1.6 * this._width);
+      .translate([0.15 * this.width, 1.84 * this.width])
+      .scale(1.6 * this.width);
+  }
+
+  // Width & height
+  private get width() {
+    return this._width;
+  }
+  private set width(value: number) {
+    this._width = value;
+  }
+  private get height() {
+    return this._height;
+  }
+  private set height(value: number) {
+    this._height = value;
+    // Also set main menu options style
+    d3.select('.main-map-options').style('height', `${this.height}px`);
   }
 
   // --------------------------------------------------------------------------
@@ -111,8 +127,8 @@ export class MainMap {
 
   // Dynamic settings
   private _current_scale: number = 1.0;
-  private _width: number;
-  private _height: number;
+  private _width: number = 0;
+  private _height: number = 0;
 }
 
 export interface GraphParts {

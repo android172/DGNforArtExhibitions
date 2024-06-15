@@ -6,7 +6,7 @@
 }
 
 .main-map {
-  width: calc(60% - 2% - 2px);
+  width: calc(65% - 2% - 2px);
   height: 100%;
   margin: 1%;
   border: 1px solid black;
@@ -14,43 +14,60 @@
 }
 
 .main-map-options {
-  width: calc(40% - 2%);
+  width: calc(35% - 2%);
   padding: 1%;
 }
 
 /* Media query for small devices */
 @media (max-width: 768px) {
+
   /* Stack divs vertically for small screens */
   .main-map,
   .main-map-options {
-    width: 100%; /* Full width for small screens */
+    width: 100%;
+    /* Full width for small screens */
   }
 }
 
 /* -------------------------------------------------------------------------- */
 
-.select-artists-container {
-  margin-bottom: 10px;
+.main-map-options {
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden;
+  height: 500px;
 }
 
-.select-artists {
+.artist-selector-container {
+  margin-right: auto;
+}
+
+.selected-artists-container {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  height: 100%;
 }
 
 .selected-artists {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-right: 10px;
-  margin-bottom: 10px;
-  padding-left: 20px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
+  width: 15em;
+  margin-right: 2em;
+  flex: 0 0 auto;
+  overflow-y: hidden;
 }
 
-.selected-artists > button {
-  margin-left: auto;
+.selected-artists>button {
+  float: right;
+  margin-top: -28%;
+  margin-right: 5%;
+  background: #f0f0f0;
+  border-radius: 0.5em;
+}
+
+.selected-artists>button:hover {
+  background: lightgray;
 }
 
 /* -------------------------------------------------------------------------- */

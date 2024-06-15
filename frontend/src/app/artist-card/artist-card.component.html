@@ -1,0 +1,114 @@
+<mat-card class="artist-card">
+  <mat-card-header>
+    <mat-card-title>{{ artist.full_name }}</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="artist-details">
+      <!-- Labels -->
+      <div class="artist-details-row">
+        <span
+          *ngIf="artist.first_name !== undefined"
+          class="artist-detail-label"
+          >First Name:</span
+        >
+        <span *ngIf="artist.last_name !== undefined" class="artist-detail-label"
+          >Last Name:</span
+        >
+        <span *ngIf="artist.title !== undefined" class="artist-detail-label"
+          >Title:</span
+        >
+        <span *ngIf="artist.sex !== undefined" class="artist-detail-label"
+          >Sex:</span
+        >
+        <span *ngIf="artist.country !== undefined" class="artist-detail-label"
+          >Country:</span
+        >
+        <span
+          *ngIf="artist.birth_date !== undefined"
+          class="artist-detail-label"
+          >Year of Birth:</span
+        >
+        <span
+          *ngIf="artist.birth_place !== undefined"
+          class="artist-detail-label"
+          >Year of Death:</span
+        >
+        <span
+          *ngIf="artist.death_date !== undefined"
+          class="artist-detail-label"
+          >Birth Place:</span
+        >
+        <span
+          *ngIf="artist.death_place !== undefined"
+          class="artist-detail-label"
+          >Death Place:</span
+        >
+        <span
+          *ngIf="artist.exhibited_exhibitions.length !== 0"
+          class="artist-detail-label"
+          >Exhibitions:</span
+        >
+      </div>
+
+      <!-- Values -->
+      <div class="artist-details-row">
+        <span
+          *ngIf="artist.first_name !== undefined"
+          class="artist-detail-value"
+          >{{ artist.first_name }}</span
+        >
+        <span
+          *ngIf="artist.last_name !== undefined"
+          class="artist-detail-value"
+          >{{ artist.last_name }}</span
+        >
+        <span *ngIf="artist.title !== undefined" class="artist-detail-value">{{
+          artist.title
+        }}</span>
+        <span *ngIf="artist.sex !== undefined" class="artist-detail-value">{{
+          artist.sex
+        }}</span>
+        <span
+          *ngIf="artist.country !== undefined"
+          class="artist-detail-value"
+          >{{ artist.country }}</span
+        >
+        <span
+          *ngIf="artist.birth_date !== undefined"
+          class="artist-detail-value"
+          >{{ artist.birth_date!.getFullYear() }}</span
+        >
+        <span
+          *ngIf="artist.birth_place !== undefined"
+          class="artist-detail-value"
+          >{{ artist.birth_place }}</span
+        >
+        <span
+          *ngIf="artist.death_date !== undefined"
+          class="artist-detail-value"
+          >{{ artist.death_date!.getFullYear() }}</span
+        >
+        <span
+          *ngIf="artist.death_place !== undefined"
+          class="artist-detail-value"
+          >{{ artist.death_place }}</span
+        >
+      </div>
+    </div>
+
+    <!-- Exhibition list -->
+    <div
+      *ngIf="artist.exhibited_exhibitions.length !== 0"
+      class="artist-exhibition-list"
+    >
+      <span
+        *ngFor="
+          let exhibition of parse_exhibitions(artist.exhibited_exhibitions)
+        "
+        class="artist-exhibition"
+      >
+        {{ exhibition }}
+      </span>
+    </div>
+  </mat-card-content>
+</mat-card>

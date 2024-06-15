@@ -22,14 +22,19 @@ import { ArtistList } from './artist_list';
 import {
   GET_ARTISTS,
   GET_ARTIST_EXHIBITION_INFO,
+  GET_ARTIST_INFO,
   GET_HOSTS,
 } from '../graphql.operations';
 import ErrorDisplay from '../error_display';
+import { ArtistCardComponent } from '../artist-card/artist-card.component';
 
 @Component({
   selector: 'app-map-view',
   standalone: true,
   imports: [
+    // Components
+    ArtistCardComponent,
+    // Other
     CommonModule,
     MatFormFieldModule,
     MatSelectModule,
@@ -92,7 +97,29 @@ export class MapViewComponent implements AfterViewInit {
 
         // Load available artists list with artists name
         this.artist_list.load_artists(Artist.from_query(data));
-        this.artist_list.available_artists.sort();
+      });
+  }
+
+  select_artist(artist: Artist): void {
+    this.artist_list.select_artist(artist);
+
+    // Check if this action is needed
+    if (artist.all_fields_loaded) return;
+
+    // Load fields
+    this.apollo
+      .query({
+        query: GET_ARTIST_INFO,
+        variables: { id: artist.id?.toString() },
+      })
+      .subscribe(({ data, error }: ApolloQueryResult<unknown>) => {
+        if (error !== undefined) {
+          ErrorDisplay.show_message(error.message);
+          return;
+        }
+
+        // Finalize filed loading
+        artist.load_all_fields(data);
       });
   }
 

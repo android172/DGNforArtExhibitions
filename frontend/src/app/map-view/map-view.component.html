@@ -2,11 +2,12 @@
   <svg class="main-map" #main_map></svg>
   <div class="main-map-options">
     <!-- Artist list dropdown -->
-    <mat-form-field appearance="fill">
+    <mat-form-field appearance="fill" class="artist-selector-container">
       <mat-label>Select artists</mat-label>
       <mat-select
         #select_artists
-        (selectionChange)="artist_list.select_artist($event.value)"
+        (selectionChange)="select_artist($event.value)"
+        [disabled]="!artist_list.artists_loaded"
       >
         <ngx-mat-select-search
           [formControl]="artist_list.artists_search_control"
@@ -15,7 +16,7 @@
           *ngFor="let artist of artist_list.filtered_artists | async"
           [value]="artist"
         >
-          {{ artist }}
+          {{ artist.full_name }}
         </mat-option>
       </mat-select>
     </mat-form-field>
@@ -26,7 +27,7 @@
         *ngFor="let artist of artist_list.selected_artists"
         class="selected-artists"
       >
-        {{ artist }}
+        <app-artist-card [artist]="artist"></app-artist-card>
         <button
           mat-icon-button
           color="warn"

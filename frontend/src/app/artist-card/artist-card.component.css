@@ -1,0 +1,53 @@
+/* artist-card.component.css */
+.artist-card {
+  height: 98%;
+  margin: 1%;
+  overflow: scroll;
+}
+
+.artist-details {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.artist-details-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.artist-detail-label {
+  font-weight: bold;
+  flex: 1;
+  text-align: left;
+  text-overflow: clip;
+  padding: 0.25em;
+}
+
+.artist-detail-value {
+  flex: 1;
+  text-align: left;
+  text-overflow: clip;
+  padding: 0.25em;
+}
+
+.artist-exhibition-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.artist-exhibition {
+  width: 95%;
+  flex: 1;
+  text-align: left;
+  background: #f0f0f0;
+  padding: 0.5em;
+  border-radius: 0.5em;
+  margin-bottom: 0.5em;
+  overflow: scroll;
+  margin-right: 5%;
+}
+
+.artist-exhibition:hover {
+  background: lightgray;
+}

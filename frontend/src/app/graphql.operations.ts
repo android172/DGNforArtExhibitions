@@ -8,30 +8,33 @@ export const GET_ARTISTS = gql`
       id
       firstname
       lastname
-      title
-      sex
-      country
-      birthdate
-      birthplace
-      deathdate
-      deathplace
     }
   }
 `;
 
-export const GET_ARTIST_BY_ID = gql`
+export const GET_ARTIST_INFO = gql`
   query GetArtistById($id: String) {
     artists(where: { id: $id }) {
       id
-      firstname
-      lastname
-      title
-      sex
       country
       birthdate
       birthplace
       deathdate
       deathplace
+      exhibitedExhibitions {
+        id
+        title
+        startdate
+        type
+        tookPlaceInHosts {
+          id
+          name
+          country
+          place
+          longitude
+          latitude
+        }
+      }
     }
   }
 `;

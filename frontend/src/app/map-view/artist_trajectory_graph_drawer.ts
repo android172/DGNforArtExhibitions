@@ -320,7 +320,7 @@ export class ArtistTrajectoryGraphDrawer {
   private _scale_rule_circles = (d: number) =>
     (2.5 * d) / Math.sqrt(this._map.current_scale);
   private _scale_rule_conn = (d: any) =>
-    (1 * d.weight) / this._map.current_scale;
+    (1 * d.artists.length) / this._map.current_scale;
 
   private _place_location = (_: any, i: number) => {
     const location = this._graph_drawer.point_location(i);

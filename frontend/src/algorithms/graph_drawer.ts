@@ -235,7 +235,7 @@ export class GraphDrawer {
     // Check all points
     for (const point of this._points) {
       // Intersect
-      const t = line.intersect_circle_t(point.loc, point.rad);
+      const t = line.intersect_circle_t(point.loc, point.rad * 1.1);
 
       // No intersection => no midpoint
       if (t === undefined || t.length === 1) continue;
