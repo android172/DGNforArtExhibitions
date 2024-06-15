@@ -15,7 +15,6 @@ import { ApolloQueryResult } from '@apollo/client';
 
 import { Host } from '../../objects/host';
 import { Place } from '../../objects/place';
-import { Exhibition } from '../../objects/exhibition';
 import { Artist } from '../../objects/artist';
 import { MainMap } from './main_map';
 import { ArtistList } from './artist_list';
@@ -124,7 +123,13 @@ export class MapViewComponent implements AfterViewInit {
       .query({
         query: GET_ARTIST_EXHIBITION_INFO,
         variables: {
-          id_list: ['1', '2', '83', '52', '12'],
+          id_list: [
+            '1', //
+            '2', //
+            '83', //
+            '52', //
+            '12',
+          ],
         },
       })
       .subscribe(({ data, error }: ApolloQueryResult<unknown>) => {

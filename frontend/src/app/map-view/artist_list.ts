@@ -46,12 +46,12 @@ export class ArtistList {
     if (!this.artists_loaded) return;
     if (this.selected_artists.includes(artist)) return;
     this.selected_artists.push(artist);
-    this.available_artists = this.available_artists.filter((a) => a != artist);
+    this.available_artists = this.available_artists.filter((a) => a !== artist);
     this.select_artists.writeValue(null);
   }
 
   remove_artist(artist: string): void {
-    this.selected_artists = this.selected_artists.filter((a) => a != artist);
+    this.selected_artists = this.selected_artists.filter((a) => a !== artist);
     this.available_artists.push(artist);
     this.available_artists.sort();
   }

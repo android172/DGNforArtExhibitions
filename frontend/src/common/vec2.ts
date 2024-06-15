@@ -3,8 +3,9 @@ export class Vec2 {
 
   constructor(x: number, y: number);
   constructor(values: number[]);
+  constructor(values: [number, number]);
   constructor(k: number);
-  constructor(a: number | number[], b?: number) {
+  constructor(a: number | number[] | [number, number], b?: number) {
     if (a instanceof Array) {
       this.values = a;
     } else if (b === undefined) {
@@ -241,6 +242,11 @@ export class Vec2 {
     return this.values[0] + this.values[1];
   }
 
+  /** Apply function to both arguments */
+  apply(fn: any): Vec2 {
+    return new Vec2(fn(this.values));
+  }
+
   // --------------------------------------------------------------------------
   // Public static functions
   // --------------------------------------------------------------------------
@@ -258,7 +264,7 @@ export class Vec2 {
   /** Calculate the average vector. */
   static average = (...vecs: Vec2[]): Vec2 => {
     let accumulator = new Vec2(0, 0);
-    if (vecs.length == 0) {
+    if (vecs.length === 0) {
       return accumulator;
     }
 
@@ -280,7 +286,7 @@ export class Vec2 {
     let totalWeight = 0;
 
     const N = Math.min(vecs.length, weights.length);
-    if (N == 0) {
+    if (N === 0) {
       return accumulator;
     }
 
