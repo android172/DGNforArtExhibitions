@@ -10,9 +10,9 @@ import { Vec2 } from '../../common/vec2';
  */
 export class ArtistTrajectoryGraph {
   constructor(artists: Artist[]) {
-    const trajectories = artists.map((artist: Artist) =>
-      this.add_artist_trajectory(artist),
-    );
+    const trajectories = artists
+      .filter((a) => a.exhibited_exhibitions.length !== 0)
+      .map((artist: Artist) => this.add_artist_trajectory(artist));
     this.compute_connections(trajectories);
   }
 

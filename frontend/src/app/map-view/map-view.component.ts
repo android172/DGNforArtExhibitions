@@ -13,8 +13,6 @@ import * as d3 from 'd3';
 import { Apollo } from 'apollo-angular';
 import { ApolloQueryResult } from '@apollo/client';
 
-import { Host } from '../../objects/host';
-import { Place } from '../../objects/place';
 import { Artist } from '../../objects/artist';
 import { MainMap } from './main_map';
 import { ArtistList } from './artist_list';
@@ -23,10 +21,10 @@ import {
   GET_ARTISTS,
   GET_ARTIST_EXHIBITION_INFO,
   GET_ARTIST_INFO,
-  GET_HOSTS,
 } from '../graphql.operations';
 import ErrorDisplay from '../error_display';
 import { ArtistCardComponent } from '../artist-card/artist-card.component';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @Component({
   selector: 'app-map-view',
@@ -36,6 +34,7 @@ import { ArtistCardComponent } from '../artist-card/artist-card.component';
     ArtistCardComponent,
     // Other
     CommonModule,
+    ScrollingModule,
     MatFormFieldModule,
     MatSelectModule,
     MatIconModule,
@@ -120,29 +119,28 @@ export class MapViewComponent implements AfterViewInit {
 
         // Finalize filed loading
         artist.load_all_fields(data);
+
+        // Now we can update graph display
+        this.main_map.draw_artists_life_trajectory(
+          this.artist_list.selected_artists,
+        );
       });
+  }
+
+  remove_artist(artist: Artist) {
+    this.artist_list.remove_artist(artist);
+    this.main_map.draw_artists_life_trajectory(
+      this.artist_list.selected_artists,
+    );
   }
 
   // --------------------------------------------------------------------------
 
-  load_hosts(): void {
-    this.apollo
-      .query({
-        query: GET_HOSTS,
-      })
-      .subscribe(({ data, error }: ApolloQueryResult<unknown>) => {
-        if (error !== undefined) {
-          ErrorDisplay.show_message(error.message);
-          return;
-        }
-
-        // Create hosts
-        let hosts = Host.from_query(data);
-        // Create places
-        let places = Place.from_hosts(hosts);
-        // Put them on the map
-        // this.main_map.draw_places(places);
-      });
+  clear_artists(): void {
+    this.artist_list.remove_all_artists();
+    this.main_map.draw_artists_life_trajectory(
+      this.artist_list.selected_artists,
+    );
   }
 
   load_exhibitions(): void {

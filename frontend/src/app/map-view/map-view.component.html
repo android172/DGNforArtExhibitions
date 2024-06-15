@@ -7,17 +7,25 @@
       <mat-select
         #select_artists
         (selectionChange)="select_artist($event.value)"
-        [disabled]="!artist_list.artists_loaded"
       >
-        <ngx-mat-select-search
-          [formControl]="artist_list.artists_search_control"
-        ></ngx-mat-select-search>
-        <mat-option
-          *ngFor="let artist of artist_list.filtered_artists | async"
-          [value]="artist"
-        >
-          {{ artist.full_name }}
-        </mat-option>
+        <mat-option>
+          <ngx-mat-select-search
+            [formControl]="artist_list.artists_search_control"
+          ></ngx-mat-select-search
+        ></mat-option>
+        <!-- [disabled]="!artist_list.artists_loaded" -->
+        <div style="height: 100em; width: 100%">
+          <cdk-virtual-scroll-viewport itemSize="50" style="height: 100%">
+            <mat-option
+              *cdkVirtualFor="
+                let artist of artist_list.filtered_artists | async
+              "
+              [value]="artist"
+            >
+              {{ artist.full_name }}
+            </mat-option>
+          </cdk-virtual-scroll-viewport>
+        </div>
       </mat-select>
     </mat-form-field>
 
@@ -28,18 +36,16 @@
         class="selected-artists"
       >
         <app-artist-card [artist]="artist"></app-artist-card>
-        <button
-          mat-icon-button
-          color="warn"
-          (click)="artist_list.remove_artist(artist)"
-        >
+        <button mat-icon-button color="warn" (click)="remove_artist(artist)">
           <mat-icon>delete</mat-icon>
         </button>
       </div>
     </div>
 
     <!-- Some buttons -->
-    <button (click)="load_hosts()">Load hosts</button>
-    <button (click)="load_exhibitions()">Load exhibitions</button>
+    <div class="options">
+      <button mat-button (click)="clear_artists()">Clear</button>
+      <button mat-button (click)="load_exhibitions()">Demo Exhibitions</button>
+    </div>
   </div>
 </div>
