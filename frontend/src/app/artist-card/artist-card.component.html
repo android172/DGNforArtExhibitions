@@ -29,12 +29,12 @@
           >Year of Birth:</span
         >
         <span
-          *ngIf="artist.birth_place !== undefined"
+          *ngIf="artist.death_date !== undefined"
           class="artist-detail-label"
           >Year of Death:</span
         >
         <span
-          *ngIf="artist.death_date !== undefined"
+          *ngIf="artist.birth_place !== undefined"
           class="artist-detail-label"
           >Birth Place:</span
         >
@@ -42,11 +42,6 @@
           *ngIf="artist.death_place !== undefined"
           class="artist-detail-label"
           >Death Place:</span
-        >
-        <span
-          *ngIf="artist.exhibited_exhibitions.length !== 0"
-          class="artist-detail-label"
-          >Exhibitions:</span
         >
       </div>
 
@@ -79,14 +74,14 @@
           >{{ artist.birth_date!.getFullYear() }}</span
         >
         <span
-          *ngIf="artist.birth_place !== undefined"
-          class="artist-detail-value"
-          >{{ artist.birth_place }}</span
-        >
-        <span
           *ngIf="artist.death_date !== undefined"
           class="artist-detail-value"
           >{{ artist.death_date!.getFullYear() }}</span
+        >
+        <span
+          *ngIf="artist.birth_place !== undefined"
+          class="artist-detail-value"
+          >{{ artist.birth_place }}</span
         >
         <span
           *ngIf="artist.death_place !== undefined"
@@ -97,6 +92,11 @@
     </div>
 
     <!-- Exhibition list -->
+    <span
+      *ngIf="artist.exhibited_exhibitions.length !== 0"
+      class="artist-detail-label"
+      >Exhibitions:</span
+    >
     <div
       *ngIf="artist.exhibited_exhibitions.length !== 0"
       class="artist-exhibition-list"
@@ -106,8 +106,10 @@
           let exhibition of parse_exhibitions(artist.exhibited_exhibitions)
         "
         class="artist-exhibition"
+        (mouseenter)="highlight_exhibition(exhibition)"
+        (mouseout)="highlight_no_exhibition()"
       >
-        {{ exhibition }}
+        {{ print_exhibition(exhibition) }}
       </span>
     </div>
   </mat-card-content>

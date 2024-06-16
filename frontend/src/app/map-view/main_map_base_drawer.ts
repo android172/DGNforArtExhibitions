@@ -1,11 +1,11 @@
 import * as d3 from 'd3';
 import * as topojson from 'topojson-client';
-import { GraphParts, MainMap } from './main_map';
+import { D3Selection, GraphParts, MainMap } from './main_map';
 
 export class MainMapBaseDrawer {
   constructor(
-    private _graphs: GraphParts,
     private _map: MainMap,
+    private _base_map: D3Selection,
   ) {}
 
   // --------------------------------------------------------------------------
@@ -25,9 +25,9 @@ export class MainMapBaseDrawer {
     this.draw_map();
   }
 
-  public on_rescaled() {
+  public on_rescale() {
     // Update path width
-    this._graphs.base_map
+    this._base_map
       .selectAll('path')
       .attr('stroke-width', this._scale_rule_borders);
   }
@@ -35,7 +35,7 @@ export class MainMapBaseDrawer {
   public on_resize() {
     // Update path projection
     const path: any = d3.geoPath().projection(this._map.projection);
-    this._graphs.base_map.selectAll('path').attr('d', path);
+    this._base_map.selectAll('path').attr('d', path);
   }
 
   // --------------------------------------------------------------------------
@@ -43,7 +43,7 @@ export class MainMapBaseDrawer {
   // --------------------------------------------------------------------------
   private draw_map() {
     // generates and styles the SVG path
-    const graph = this._graphs.base_map;
+    const graph = this._base_map;
     graph
       .selectAll('path')
       .data(this._map_geo)
@@ -52,7 +52,7 @@ export class MainMapBaseDrawer {
           enter
             .append('path')
             .attr('d', this._path)
-            .attr('stroke', 'black')
+            .attr('stroke', 'darkgray')
             .attr('stroke-width', this._scale_rule_borders)
             .attr('fill', this._fill_color)
             .attr('data-id', (d: any) => d.id)
@@ -106,8 +106,9 @@ export class MainMapBaseDrawer {
   private _path: any;
 
   // Static settings
-  private _fill_color: string = '#327';
-  private _selected_color: string = 'red';
+  private _fill_color: string = 'lightyellow';
+  private _selected_color: string = 'lightyellow';
+  // private _selected_color: string = '#327';
 
   // Drawing
   private _scale_rule_borders: any = (d: any) => 0.5 / this._map.current_scale;

@@ -3,7 +3,6 @@ import { Artist } from '../../objects/artist';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { Parse } from '../../objects/common';
 
 export class ArtistList {
   // List of available / selected artists
@@ -112,6 +111,5 @@ export class ArtistList {
       startWith(''),
       map((filter_string) => this.filter_artists(filter_string)),
     );
-    console.log(this.available_artists);
   }
 }

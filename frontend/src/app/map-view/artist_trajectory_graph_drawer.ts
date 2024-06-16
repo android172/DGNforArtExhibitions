@@ -21,16 +21,17 @@ export class ArtistTrajectoryGraphDrawer {
 
   // Configurations
   private _small_circle_max = 4;
-  private _year_range: [number, number] = [1902, 1916];
   private _s_offset: number = 0.65;
   private _e_offset: number = 0.35;
+  private _default_opp: number = 0.85;
 
   // --------------------------------------------------------------------------
   // Constructor
   // --------------------------------------------------------------------------
   constructor(
-    private _graphs: GraphParts,
     private _map: MainMap,
+    private _graphs: GraphParts,
+    private _color_scale: any,
   ) {}
 
   // --------------------------------------------------------------------------
@@ -54,7 +55,64 @@ export class ArtistTrajectoryGraphDrawer {
     this.draw_places();
     this.draw_self_connections();
     this.draw_connections();
-    // this.draw_debug_points();
+  }
+
+  public highlight_connections(artists: number[]) {
+    this._graphs.conn
+      .selectAll('.link')
+      .transition()
+      .duration(200)
+      .attr('stroke-opacity', (d: any) => {
+        for (const a of d.artists) {
+          if (artists.includes(a)) return 1;
+        }
+        return 0.2;
+      });
+    this._graphs.s_conn
+      .selectAll('.link')
+      .transition()
+      .duration(200)
+      .attr('stroke-opacity', (d: any) => {
+        for (const a of d.artists) {
+          if (artists.includes(a)) return 1;
+        }
+        return 0.2;
+      });
+  }
+
+  public highlight_no_connection() {
+    this._graph_drawer;
+    this._graphs.conn
+      .selectAll('.link')
+      .transition()
+      .duration(200)
+      .attr('stroke-opacity', this._default_opp);
+    this._graphs.s_conn
+      .selectAll('.link')
+      .transition()
+      .duration(200)
+      .attr('stroke-opacity', this._default_opp);
+  }
+
+  public highlight_places(places: string[], year: number) {
+    this._graphs.places
+      .selectAll('.place-pie path')
+      .transition()
+      .duration(200)
+      .style('opacity', function (d: any) {
+        const this_place: string = d3
+          .select((this as any).parentNode)
+          .attr('place');
+        const this_year: number = d.data;
+        return this_year === year && places.includes(this_place) ? 1 : 0.2;
+      });
+  }
+  public highlight_no_place() {
+    this._graphs.places
+      .selectAll('.place-pie path')
+      .transition()
+      .duration(200)
+      .style('opacity', this._default_opp);
   }
 
   public on_rescale() {
@@ -123,8 +181,12 @@ export class ArtistTrajectoryGraphDrawer {
           enter
             .append('g')
             .attr('class', 'place-pie')
+            .attr('place', (d) => d.place.place!)
             .attr('transform', this._place_location),
-        (update) => update.attr('transform', this._place_location),
+        (update) =>
+          update
+            .attr('place', (d) => d.place.place!)
+            .attr('transform', this._place_location),
         (exit) => exit.remove(),
       );
 
@@ -136,6 +198,7 @@ export class ArtistTrajectoryGraphDrawer {
         (enter) =>
           enter
             .append('path')
+            .attr('opacity', this._default_opp)
             .attr('stroke-width', 0)
             .attr('d', this._pie_arc_circles)
             .attr('fill', (d) => this._color_scale(d.data)),
@@ -144,7 +207,15 @@ export class ArtistTrajectoryGraphDrawer {
             .attr('d', this._pie_arc_circles)
             .attr('fill', (d) => this._color_scale(d.data)),
         (exit) => exit.remove(),
-      );
+      )
+      .on('mouseenter', (event, d) => {
+        const place = d3.select(event.currentTarget.parentNode).attr('place');
+        const year = d.data;
+        this._map.highlight_places([place], year);
+      })
+      .on('mouseout', (_) => {
+        this._map.highlight_no_place();
+      });
   }
 
   private draw_connections() {
@@ -209,7 +280,7 @@ export class ArtistTrajectoryGraphDrawer {
             .attr('class', 'link')
             .attr('fill', 'none')
             .attr('stroke', (_, i) => `url(#gradient${i})`)
-            .attr('stroke-opacity', 0.7)
+            .attr('stroke-opacity', this._default_opp)
             .attr('stroke-width', this._scale_rule_conn)
             .attr('marker-end', (_, i) => `url(#end${i})`)
             .attr('d', this._connection_curve),
@@ -220,7 +291,13 @@ export class ArtistTrajectoryGraphDrawer {
             .attr('stroke-width', this._scale_rule_conn)
             .attr('d', this._connection_curve),
         (exit) => exit.remove(),
-      );
+      )
+      .on('mouseover', (_, d) => {
+        this._map.highlight_artists(d.artists);
+      })
+      .on('mouseout', (_) => {
+        this._map.highlight_no_artist();
+      });
   }
 
   private draw_self_connections() {
@@ -235,6 +312,7 @@ export class ArtistTrajectoryGraphDrawer {
             .attr('class', 'link')
             .attr('fill', 'none')
             .attr('stroke', 'black')
+            .attr('stroke-opacity', this._default_opp)
             .attr('stroke-width', this._scale_rule_conn)
             .attr('d', this._connection_self_curve),
         (update) =>
@@ -242,7 +320,13 @@ export class ArtistTrajectoryGraphDrawer {
             .attr('stroke-width', this._scale_rule_conn)
             .attr('d', this._connection_self_curve),
         (exit) => exit.remove(),
-      );
+      )
+      .on('mouseover', (_, d) => {
+        this._map.highlight_artists(d.artists);
+      })
+      .on('mouseout', (_) => {
+        this._map.highlight_no_artist();
+      });
   }
 
   private compute_connection_location(
@@ -299,10 +383,6 @@ export class ArtistTrajectoryGraphDrawer {
   // Members
   // --------------------------------------------------------------------------
   // Drawing aids
-  private _color_scale = d3
-    .scaleSequential()
-    .domain(this._year_range)
-    .interpolator(d3.interpolateCubehelixDefault);
   private _pie_arc_circles = d3
     .arc<any>()
     .innerRadius((d) => {
@@ -320,7 +400,7 @@ export class ArtistTrajectoryGraphDrawer {
   private _scale_rule_circles = (d: number) =>
     (2.5 * d) / Math.sqrt(this._map.current_scale);
   private _scale_rule_conn = (d: any) =>
-    (1 * d.artists.length) / this._map.current_scale;
+    (1 * d.artists.length) / Math.log(1 + 2 * this._map.current_scale);
 
   private _place_location = (_: any, i: number) => {
     const location = this._graph_drawer.point_location(i);

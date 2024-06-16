@@ -49,7 +49,7 @@ export class MapViewComponent implements AfterViewInit {
   // Main map
   @ViewChild('main_map', { read: ElementRef })
   main_map_element!: ElementRef;
-  main_map!: MainMap;
+  _main_map!: MainMap;
 
   // Artist list
   @ViewChild('select_artists', { read: MatSelect })
@@ -69,15 +69,15 @@ export class MapViewComponent implements AfterViewInit {
     this.load_available_artists();
   }
   on_resize() {
-    this.main_map.on_resize();
+    this._main_map.on_resize();
   }
 
   // --------------------------------------------------------------------------
 
   load_map(): void {
-    this.main_map = new MainMap(this.main_map_element.nativeElement);
+    this._main_map = new MainMap(this.main_map_element.nativeElement);
     d3.json('../assets/europe.topojson').then((map_data: any) =>
-      this.main_map.draw_base_map(map_data),
+      this._main_map.draw_base_map(map_data),
     );
   }
 
@@ -121,7 +121,7 @@ export class MapViewComponent implements AfterViewInit {
         artist.load_all_fields(data);
 
         // Now we can update graph display
-        this.main_map.draw_artists_life_trajectory(
+        this._main_map.draw_artists_life_trajectory(
           this.artist_list.selected_artists,
         );
       });
@@ -129,16 +129,25 @@ export class MapViewComponent implements AfterViewInit {
 
   remove_artist(artist: Artist) {
     this.artist_list.remove_artist(artist);
-    this.main_map.draw_artists_life_trajectory(
+    this._main_map.draw_artists_life_trajectory(
       this.artist_list.selected_artists,
     );
   }
 
   // --------------------------------------------------------------------------
 
+  highlight_artist(artist: number) {
+    this._main_map.highlight_artists([artist]);
+  }
+  highlight_no_artist() {
+    this._main_map.highlight_no_artist();
+  }
+
+  // --------------------------------------------------------------------------
+
   clear_artists(): void {
     this.artist_list.remove_all_artists();
-    this.main_map.draw_artists_life_trajectory(
+    this._main_map.draw_artists_life_trajectory(
       this.artist_list.selected_artists,
     );
   }
@@ -167,9 +176,7 @@ export class MapViewComponent implements AfterViewInit {
         let artist = Artist.from_query(data);
 
         // Draw trajectories
-        this.main_map.draw_artists_life_trajectory(artist);
+        this._main_map.draw_artists_life_trajectory(artist);
       });
   }
-
-  // --------------------------------------------------------------------------
 }

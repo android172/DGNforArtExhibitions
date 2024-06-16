@@ -7,6 +7,7 @@
       <mat-select
         #select_artists
         (selectionChange)="select_artist($event.value)"
+        style="overflow: hidden"
       >
         <mat-option>
           <ngx-mat-select-search
@@ -14,7 +15,7 @@
           ></ngx-mat-select-search
         ></mat-option>
         <!-- [disabled]="!artist_list.artists_loaded" -->
-        <div style="height: 100em; width: 100%">
+        <div style="height: 15em; width: 100%">
           <cdk-virtual-scroll-viewport itemSize="50" style="height: 100%">
             <mat-option
               *cdkVirtualFor="
@@ -34,8 +35,14 @@
       <div
         *ngFor="let artist of artist_list.selected_artists"
         class="selected-artists"
+        [attr.artist-id]="artist.id"
+        (mouseover)="highlight_artist(artist.id!)"
+        (mouseout)="highlight_no_artist()"
       >
-        <app-artist-card [artist]="artist"></app-artist-card>
+        <app-artist-card
+          [artist]="artist"
+          [main_map]="_main_map"
+        ></app-artist-card>
         <button mat-icon-button color="warn" (click)="remove_artist(artist)">
           <mat-icon>delete</mat-icon>
         </button>

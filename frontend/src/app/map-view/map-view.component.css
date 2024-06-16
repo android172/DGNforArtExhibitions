@@ -11,6 +11,8 @@
   margin: 1%;
   border: 1px solid black;
   aspect-ratio: 5 / 3;
+  background: lightyellow;
+  background: lightblue;
 }
 
 .main-map-options {
