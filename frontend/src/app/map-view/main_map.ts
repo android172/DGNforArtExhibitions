@@ -156,7 +156,7 @@ export class MainMap {
 
   // Static settings
   private _zoom_threshold: [number, number] = [1.0, 4.0];
-  private _year_range: [number, number] = [1902, 1916];
+  private _year_range: [number, number] = [1905, 1915];
 
   // Dynamic settings
   private _current_scale: number = 1.0;
