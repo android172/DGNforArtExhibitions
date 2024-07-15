@@ -61,9 +61,9 @@ export class Line {
 
   intersect_circle(
     center: Vec2,
-    sq_radius: number,
+    radius: number,
   ): [Vec2, Vec2] | Vec2 | undefined {
-    const t = this.intersect_circle_t(center, sq_radius);
+    const t = this.intersect_circle_t(center, radius);
 
     // No intersection
     if (t === undefined) return t;
@@ -79,11 +79,13 @@ export class Line {
 
   intersect_circle_t(
     center: Vec2,
-    sq_radius: number,
+    radius: number,
   ): [number, number] | [number] | undefined {
+    const cp = this.p.sub(center);
+
     // a = 1;
-    const b = this.p.sub(center).times(this.d).times(2).arg_sum();
-    const c = this.p.sub(center).sq_mag() - sq_radius;
+    const b = 2 * this.d.dot(cp);
+    const c = cp.sq_mag() - radius * radius;
     const d = b * b - 4 * c;
 
     // No intersection points
@@ -99,6 +101,6 @@ export class Line {
     const t1 = (-b + Math.sqrt(d)) / 2;
     const t2 = (-b - Math.sqrt(d)) / 2;
 
-    return [t1, t2];
+    return t1 < t2 ? [t1, t2] : [t2, t1];
   }
 }
