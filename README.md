@@ -2,26 +2,95 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.0.
 
-## Development server
+## Prerequisites
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Before you begin, ensure you have met the following requirements:
 
-## Code scaffolding
+- **Node.js** (v14.x or later)
+- **npm** (v6.x or later)
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Installation
+
+To install the project dependencies, follow these steps:
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/android172/DGNforArtExhibitions
+   cd DGNforArtExhibitions
+   ```
+2. Install Angular CLI globally (if not already installed):
+   ```bash
+   npm install -g @angular/cli
+   ```
+3. Install the project dependencies:
+   ```bash
+   npm install
+   ```
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+To build the project, run the following command:
 
-## Running unit tests
+```bash
+ng build
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+This will compile the project and generate the output files in the dist/ directory.
 
-## Running end-to-end tests
+## Run
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+To serve the application locally, use the following command:
 
-## Further help
+```bash
+ng serve
+```
+
+This will start a development server and open the application in your default web browser. The application will automatically reload if you change any of the source files.
+
+## Project Dependencies
+
+Here is a brief overview of the main dependencies used in this project:
+
+- `@angular/core` - Angular framework core
+- `@angular/material` - Angular Material components
+- `@apollo/client` - Apollo Client for GraphQL
+- `graphql` - GraphQL library for querying APIs
+- `d3` - Data visualization library
+- `rxjs` - Reactive Extensions Library for JavaScript
+- `topojson-client` - Topojson support
+
+## Other
+
+#### Running Tests
+
+To execute the unit tests via Karma, use the following command:
+
+```bash
+ng test
+```
+
+To execute the end-to-end tests via Protractor, run:
+
+```bash
+ng e2e
+```
+
+#### Linting
+
+To lint the project files, use the following command:
+
+```bash
+ng lint
+```
+
+#### Formatting Code
+
+To format the code using Prettier, use the following command:
+
+```bash
+npx prettier --write .
+```
+
+#### Further Help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
