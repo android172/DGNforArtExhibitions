@@ -19,6 +19,8 @@ export class ArtistTrajectoryGraphDrawer {
   private _conns_self: PConn[] = [];
   private _graph_drawer: GraphDrawer = new GraphDrawer();
 
+  private _tooltip: d3.Selection<HTMLDivElement, unknown, HTMLElement, any>;
+
   // Configurations
   private _small_circle_max = 4;
   private _s_offset: number = 0.65;
@@ -32,7 +34,19 @@ export class ArtistTrajectoryGraphDrawer {
     private _map: MainMap,
     private _graphs: GraphParts,
     private _color_scale: any,
-  ) {}
+  ) {
+    // Create tooltip obj
+    this._tooltip = d3
+      .select('body')
+      .append('div')
+      .style('position', 'absolute')
+      .style('background-color', 'white')
+      .style('border', '1px solid #ddd')
+      .style('padding', '5px')
+      .style('border-radius', '3px')
+      .style('pointer-events', 'none')
+      .style('opacity', 0); // Initially hidden
+  }
 
   // --------------------------------------------------------------------------
   // Public methods
@@ -211,10 +225,29 @@ export class ArtistTrajectoryGraphDrawer {
       .on('mouseenter', (event, d) => {
         const place = d3.select(event.currentTarget.parentNode).attr('place');
         const year = d.data;
+
+        // Update the tooltip content
+        this._tooltip
+          .html(`${place} [${year}]`)
+          .style('left', `${event.pageX + 10}px`)
+          .style('top', `${event.pageY + 10}px`)
+          .style('opacity', 1); // Make it visible
+
+        // Highlight this place
         this._map.highlight_places([place], year);
       })
       .on('mouseout', (_) => {
+        // Hide the tooltip
+        this._tooltip.style('opacity', 0);
+
+        // Remove highlighting
         this._map.highlight_no_place();
+      })
+      .on('mousemove', (event) => {
+        // Update tooltip position
+        this._tooltip
+          .style('left', `${event.pageX + 10}px`)
+          .style('top', `${event.pageY + 10}px`);
       });
   }
 
