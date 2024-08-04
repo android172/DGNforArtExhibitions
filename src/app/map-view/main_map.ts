@@ -88,7 +88,10 @@ export class MainMap {
   }
 
   highlight_places(places: string[], year: number) {
-    this._drawer.atg.highlight_places(places, year);
+    if (places.length === 0)
+      // If no places are selected, highlight all places within the given year
+      this._drawer.atg.highlight_year(year);
+    else this._drawer.atg.highlight_places(places, year);
   }
   highlight_no_place() {
     this._drawer.atg.highlight_no_place();

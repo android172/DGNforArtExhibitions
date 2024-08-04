@@ -108,6 +108,16 @@ export class ArtistTrajectoryGraphDrawer {
       .attr('stroke-opacity', this._default_opp);
   }
 
+  public highlight_year(year: number) {
+    this._graphs.places
+      .selectAll('.place-pie path')
+      .transition()
+      .duration(200)
+      .style('opacity', function (d: any) {
+        const this_year: number = d.data;
+        return this_year === year ? 1 : 0.2;
+      });
+  }
   public highlight_places(places: string[], year: number) {
     this._graphs.places
       .selectAll('.place-pie path')
@@ -234,7 +244,7 @@ export class ArtistTrajectoryGraphDrawer {
           .style('opacity', 1); // Make it visible
 
         // Highlight this place
-        this._map.highlight_places([place], year);
+        this._map.highlight_places([], year);
       })
       .on('mouseout', (_) => {
         // Hide the tooltip

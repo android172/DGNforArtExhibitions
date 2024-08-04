@@ -1,6 +1,30 @@
 # DfnArtEx
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.0.
+This project aims to visualize the trajectories of artists from early 20th-century Europe in an interactive and dynamic way. Based on the "Exhibitions of Modern European Painting 1905-1915" dataset.
+
+Dataset: https://exhibitions.univie.ac.at/
+
+This project was built as an Angular webapp. All visualizations are done with D3. Connection to backend GraphQL database achieved with Apollo.
+
+### Data encodings
+
+We represent data as a temporal-geospatial visualization. Each selected artist encodes a singular line flowing from node to node. This trajectory represents the journey of their art as it flowed from exhibition to exhibition across Europe.
+
+Graph colors for nodes and links encode different exhibiting years, one for each year from 1905 to 1915.
+
+Nodes represent exhibition host locations. Each place hosted many exhibitions over this period, some of which were simultaneous. We opted to aggregate these exhibitions based on the starting year and location. Thus, we divide nodes into piechart arcs based on exhibiting years, each arc colored in the appropriate year color. Arc length doesn't encode any data, but overall node size does, as it scales with piechart segment count for better readability. To avoid clutter locations with many segments are hollowed out. The inside of these rings only shows time-only transitions.
+
+Links between node segments come in two variants. As some exhibitions occasionally partake in multiple locations simultaneously, undirected black links denote this connection between "main" and "auxiliary" hosts. Otherwise, directed links encode the transition of the artist's collection from place to place. These links transition from the source to the destination node color. When multiple artists are selected, there is a possibility of collision, where more than one artist makes the same transition. We encode this as link thickness, corresponding to the artist count.
+
+### Interactivity
+
+The graph view is pannable and zoomable, with element size adapting to the zoom level.
+
+Next to the graph, on a separate menu, we can add or remove artists whose trajectories we want to highlight. We search and add artists from the dropdown. All added artists are shown as cards with their information and exhibition history.
+
+Hovering over a link highlights all artists that made that transition, both their card and trajectory. Hovering artist cards will highlight the given artist. Hovering individual exhibitions highlights their location. All this allows for easier trajectory tracking.
+
+Hovering over node segments highlights all segments from that year. Additional information about the selected segment is shown as a tooltip.
 
 ## Prerequisites
 
